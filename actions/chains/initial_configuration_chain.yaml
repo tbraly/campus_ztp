@@ -1,0 +1,52 @@
+---
+  chain:
+    -
+      name: "delay"
+      ref: "campus_ztp.delay"
+      parameters:
+        seconds: 90
+      on-success: "get_flash"
+    -
+      name: "get_flash"
+      ref: "campus_ztp.get_flash"
+      parameters:
+        device: "{{client_ip}}"
+      on-success: "is_boot_code_current"
+    -
+      name: "is_boot_code_current"
+      ref: "campus_ztp.is_boot_code_current"
+      parameters:
+        images: "{{get_flash.result}}"
+      on-success: "is_image_current"
+      on-failure: "upgrade_boot_code"
+    -
+      name: "is_image_current"
+      ref: "campus_ztp.is_image_current"
+      parameters:
+        images: "{{get_flash.result}}"
+      on-success: "generate_ssh_key"
+      on-failure: "upgrade_image"
+    -
+      name: "upgrade_boot_code"
+      ref: "campus_ztp.upgrade_boot_code"
+      parameters:
+        device: "{{client_ip}}"
+      on-success: "is_image_current"
+    -
+      name: "upgrade_image"
+      ref: "campus_ztp.upgrade_image"
+      parameters:
+        device: "{{client_ip}}"
+      on-success: "generate_ssh_key"
+    -
+      name: "generate_ssh_key"
+      ref: "campus_ztp.generate_ssh_key"
+      parameters:
+        device: "{{client_ip}}"
+      on-success: "transfer_ztp_configuration"
+    -
+      name: "transfer_ztp_configuration"
+      ref: "campus_ztp.transfer_ztp_configuration"
+      parameters:
+        device: "{{client_ip}}"
+        excel_key: "{{remote_id}}_{{circuit_id}}"

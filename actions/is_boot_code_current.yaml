@@ -1,0 +1,19 @@
+---
+name: "is_boot_code_current"
+runner_type: "run-python"
+description: "checks to see if boot code is current"
+enabled: true
+entry_point: "is_boot_code_current.py"
+parameters:
+  images:
+    type: "string"
+    description: "output from get_images"
+    required: true
+  keep_better:
+    type: "string"
+    description: "if 'yes', then don't downgrade!"
+    required: true
+    enum:
+      - 'yes'
+      - 'no'
+    default: 'yes'

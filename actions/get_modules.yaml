@@ -1,0 +1,35 @@
+---
+name: "get_modules"
+runner_type: "run-python"
+description: "gets the modules by unit as a json record"
+enabled: true
+entry_point: "get_modules.py"
+parameters:
+  device:
+    type: "string"
+    description: "ip or hostname of the switch"
+    required: true
+  username:
+    type: "string"
+    description: "override configured username"
+    required: false
+  password:
+    type: "string"
+    description: "override configured password"
+    required: false
+  enable_username:
+    type: "string"
+    description: "override configured enable username"
+    required: false
+  enable_password:
+    type: "string"
+    description: "override configured enable password"
+    required: false
+  via:
+    type: "string"
+    description: "what way?"
+    enum:
+      - "telnet"
+      - "ssh"
+    default: "telnet"
+  

@@ -1,0 +1,11 @@
+---
+name: "delay"
+runner_type: "run-python"
+description: "creates a delay"
+enabled: true
+entry_point: "delay.py"
+parameters:
+  seconds:
+    type: "integer"
+    description: "number of seconds to delay"
+    required: true

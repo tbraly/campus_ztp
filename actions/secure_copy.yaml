@@ -1,0 +1,34 @@
+---
+name: "secure_copy"
+runner_type: "run-python"
+description: "secure copies with interactive login"
+enabled: true
+entry_point: "secure_copy.py"
+parameters:
+  hostname:
+    type: "string"
+    description: "ip or hostname of the switch"
+    required: true
+  source:
+    type: "string"
+    description: "source filename"
+    required: true
+  destination:
+    type: "string"
+    description: "destination filename"
+    required: true
+  direction:
+    type: "string"
+    description: "Copy to or from host"
+    enum: 
+      - "to"
+      - "from"
+    required: true
+  username:
+    type: "string"
+    description: "override configured username"
+    required: false
+  password:
+    type: "string"
+    description: "override configured password"
+    required: false

@@ -1,0 +1,35 @@
+---
+name: "generate_ssh_key"
+runner_type: "run-python"
+description: "generates the nessessary keys to ssh into the box"
+enabled: true
+entry_point: "generate_ssh_key.py"
+parameters:
+  device:
+    type: "string"
+    description: "ip or hostname of the switch"
+    required: true
+  modulus:
+    type: "integer"
+    description: "size of key to create"
+    required: false
+    enum:
+      - 1024
+      - 2048
+    default: 2048
+  keytype:
+    type: "string"
+    description: "type of key to create"
+    required: false
+    enum:
+     - "rsa"
+     - "dsa"
+    default: "rsa"
+  via:
+    type: "string"
+    description: "Use telnet or SSH (note that if you use SSH and are changing the key you are using it will fail!)"
+    required: false
+    enum:
+      - "telnet"
+      - "ssh"
+    default: "telnet"

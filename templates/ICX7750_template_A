@@ -1,0 +1,36 @@
+!
+! This is configuration template A 
+!
+
+hostname {{host_name}}
+
+ip address {{management_address}} {{management_mask}}
+
+snmp-server location {{snmp_location}}
+snmp-server contact {{snmp_contact}}
+
+vlan {{management_vlan}} name Management
+ tagged {{uplink_1}}
+ tagged {{uplink_2}}
+ management-vlan
+ default-gateway {{default_gateway}} 1
+vlan {{user_vlan}} name User_Vlan
+ tagged {{uplink_1}} 
+ tagged {{uplink_2}} 
+ untagged {{user_vlan_ports}}
+vlan {{voice_vlan}} name Voice_Vlan
+ tagged {{uplink_1}}
+ tagged {{uplink_2}} 
+ untagged {{voice_vlan_ports}}
+vlan {{wireless_vlan}} name Wireless_Vlan
+ tagged {{uplink_1}}
+ untagged {{wireless_vlan_ports}}
+!
+int {{uplink_1}}
+ dual-mode {{management_vlan}}
+ speed 1000-full
+!
+int {{uplink_2}}
+ dual-mode {{management_vlan}}
+ speed 1000-full
+

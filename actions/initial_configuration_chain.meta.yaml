@@ -1,0 +1,29 @@
+---
+name: "initial_configuration_chain"
+description: "Campus ZTP Workflow"
+
+runner_type: "action-chain"
+
+entry_point: "chains/initial_configuration_chain.yaml"
+
+enabled: true
+
+parameters:
+  client_ip:
+    type: "string"
+    required: true
+  remote_id:
+    type: "string"
+    required: true
+  subscriber_id:
+    type: "string"
+    required: true
+  circuit_id:
+    type: "string"
+    required: true
+  hostname:
+    type: "string"
+    required: true
+  client_mac:
+    type: "string"
+    required: true

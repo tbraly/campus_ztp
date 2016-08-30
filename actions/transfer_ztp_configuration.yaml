@@ -1,0 +1,43 @@
+---
+name: "transfer_ztp_configuration"
+runner_type: "run-python"
+description: "builds startup configuration, telnets to device, transfers config via SCP from server, and reloads switch"
+enabled: true
+entry_point: "transfer_ztp_configuration.py"
+parameters:
+  device:
+    type: "string"
+    description: "ip or hostname of the switch"
+    required: true
+  excel_key:
+    type: "string"
+    description: "the key to lookup in excel spreadsheet to create the correct file"
+    required: true
+  additional_variables:
+    type: "string"
+    description: "additional variables in JSON format to make available to the template"
+    required: false
+    default: "{}"
+  username:
+    type: "string"
+    description: "override configured username"
+    required: false
+  password:
+    type: "string"
+    description: "override configured password"
+    required: false
+  enable_username:
+    type: "string"
+    description: "override configured enable username"
+    required: false
+  enable_password:
+    type: "string"
+    description: "override configured enable password"
+    required: false
+  via:
+    type: "string"
+    description: "what way?"
+    enum:
+      - "telnet"
+      - "ssh"
+    default: "telnet"

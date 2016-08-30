@@ -1,0 +1,35 @@
+---
+name: "upgrade_image"
+runner_type: "run-python"
+description: "upgrades the image via tftp"
+enabled: true
+entry_point: "upgrade_image.py"
+parameters:
+  device:
+    type: "string"
+    description: "ip or hostname of the switch"
+    required: true
+  tftp_server:
+    type: "string"
+    description: "ip or hostname of the tftp server"
+    required: false
+  filename:
+    type: "string"
+    description: "name of the boot file on the tftp server"
+    required: false
+  flash:
+    type: "string"
+    description: "Use telnet or SSH (ToDo: SCP would be better!)"
+    required: true
+    enum:
+      - "primary"
+      - "secondary"
+    default: "primary"
+  via:
+    type: "string"
+    description: "Use telnet or SSH (ToDo: SCP would be better!)"
+    required: true
+    enum:
+      - "telnet"
+      - "ssh"
+    default: "telnet"

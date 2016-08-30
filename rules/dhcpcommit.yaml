@@ -1,0 +1,19 @@
+---
+name: "dhcpcommit"
+pack: "campus_ztp"
+enabled: true
+description: "notification that a device has made a dhcp request"
+trigger:
+  type: "core.st2.webhook"
+  parameters:
+    url: "dhcpcommit"
+
+action:
+    ref: "campus_ztp.initial_configuration_chain"
+    parameters:
+      client_ip: "{{trigger.body.payload.client_ip}}"
+      remote_id: "{{trigger.body.payload.remote_id}}"
+      subscriber_id: "{{trigger.body.payload.subscriber_id}}"
+      circuit_id: "{{trigger.body.payload.circuit_id}}"
+      hostname: "{{trigger.body.payload.hostname}}"
+      client_mac: "{{trigger.body.payload.client_mac}}"

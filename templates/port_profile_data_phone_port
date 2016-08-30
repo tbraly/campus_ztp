@@ -1,0 +1,28 @@
+{#################################################################
+    This are the commands to execute the configuration
+##################################################################}
+{% if commit=='true' %}
+!
+vlan {{data_vlan}} 
+ tagged e {{interface}}
+vlan {{voice_vlan}}
+ tagged e {{interface}}
+interface e {{interface}}
+ dual-mode {{data_vlan}}
+ enable
+!
+{% endif %}
+{#################################################################
+    This is the commands to execute to reverse the configuration
+##################################################################}
+{% if not commit=='true' %}
+!
+interface e {{interface}}
+ no dual-mode {{data_vlan}}
+ disable
+vlan {{data_vlan}}
+ no tagged e {{interface}}
+vlan {{voice_vlan}}
+ no tagged e {{interface}}
+!
+{% endif %}

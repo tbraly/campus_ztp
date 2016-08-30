@@ -1,0 +1,11 @@
+---
+template_dir: "/opt/stackstorm/packs/campus_ztp/templates/"
+excel_file: "/opt/stackstorm/packs/campus_ztp/sample.xlsx"
+temp_dir: "/opt/stackstorm/packs/campus_ztp/tmp/"
+username: "admin"
+password: "brocade"
+enable_username: "admin"
+enable_password: "brocade"
+tftp_server: "10.0.0.38"
+boot_image: "swz10106.bin"
+software_image: "SWS08040a.bin"

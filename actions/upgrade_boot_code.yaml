@@ -1,0 +1,27 @@
+---
+name: "upgrade_boot_code"
+runner_type: "run-python"
+description: "upgrades the boot code via tftp"
+enabled: true
+entry_point: "upgrade_boot_code.py"
+parameters:
+  device:
+    type: "string"
+    description: "ip or hostname of the switch"
+    required: true
+  tftp_server:
+    type: "string"
+    description: "ip or hostname of the tftp server"
+    required: false
+  filename:
+    type: "string"
+    description: "name of the boot file on the tftp server"
+    required: false
+  via:
+    type: "string"
+    description: "Use telnet or SSH (ToDo: SCP would be better!)"
+    required: true
+    enum:
+      - "telnet"
+      - "ssh"
+    default: "telnet"

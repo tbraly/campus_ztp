@@ -1,0 +1,16 @@
+---
+name: "get_configuration"
+runner_type: "run-python"
+description: "builds the switch configuration"
+enabled: true
+entry_point: "get_configuration.py"
+parameters:
+  name:
+    type: "string"
+    description: "name of configuration file"
+    required: true
+  additional_variables:
+    type: "string"
+    description: "additional variables in JSON format to make available to the template"
+    required: false
+    default: "{}"

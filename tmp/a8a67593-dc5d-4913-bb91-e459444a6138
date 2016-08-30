@@ -1,0 +1,35 @@
+!
+! This is configuration template A 
+!
+
+hostname ZTP_Campus_ICX7750
+
+ip address 10.0.0.222 255.255.255.0
+
+snmp-server location The Lab
+snmp-server contact Tim Braly
+
+vlan 10 name Management
+	tagged e 1/1/1
+	tagged e 1/1/2
+	management-vlan
+	default-gateway 10.0.0.1 1
+vlan 201 name User_Vlan
+	tagged e 1/1/1 
+	tagged e 1/1/2 
+	untagged e 1/1/3 to 1/1/44
+vlan 1001 name Voice_Vlan
+	tagged e 1/1/1
+	tagged e 1/1/2 
+	untagged e 1/1/3 to 1/1/44
+vlan 2001 name Wireless_Vlan
+	tagged e 1/1/1
+	untagged e 1/1/45 to 1/1/48
+!
+int e 1/1/1
+ dual-mode 10
+ speed 1000-full
+!
+int e 1/1/1
+ dual-mode 10
+ speed 1000-full
