@@ -10,12 +10,12 @@ def compare_versions(existing_version, new_version):
         new_version_match = regex.match(new_version)
 
         for i in range(1,5):
-                if i<4 and int(existing_version_match.group(i))>int(new_version_match.group(i)):
-                        return True
-                if i==4 and existing_version_match.group(4)>new_version_match.group(4):
-                        return True
+                if i<4 and int(existing_version_match.group(i))<int(new_version_match.group(i)):
+                        return False
+                if i==4 and existing_version_match.group(4)<new_version_match.group(4):
+                        return False
 
-        return False
+        return True
 
 
 def send_commands_to_session(session, command, conf_mode=False):
