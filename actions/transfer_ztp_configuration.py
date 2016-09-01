@@ -1,85 +1,47 @@
-from st2actions.runners.pythonrunner import Action
+"""
+Copyright 2016 Brocade Communications Systems, Inc.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
 
-from lib import Secure_Shell
-from lib import Secure_Copy
-from lib import Telnet
-from lib import Template_Parser
-from lib import Excel_Reader
+from lib import action, Session, Secure_Copy, ztp_utils
 
-import sys,os,uuid,json
+import sys, os, uuid, json
 
-class TransferZTPConfigurationAction(Action):
+class TransferZTPConfigurationAction(action.SessionAction):
     def __init__(self, config):
         super(TransferZTPConfigurationAction, self).__init__(config)
-        self._username = self.config['username']
-        self._password = self.config['password']
-        self._enable_username = self.config['enable_username']
-        self._enable_password = self.config['enable_password']
         self._template_dir = self.config['template_dir']
         self._excel_file = self.config['excel_file']
         self._temp_dir = self.config['temp_dir']
         self._filename = "%s/%s" % (self._temp_dir,uuid.uuid4())
 
     def run(self, via, device, excel_key, additional_variables='{}', username='', password='', enable_username='', enable_password=''):
-	if not username:
-		username = self._username
-	if not password:
-		password = self._password
-	if not enable_username:
-		enable_username = self._enable_username
-	if not enable_password:
-		enable_password = self._enable_password
+        ztp_utils.replace_default_userpass(self, username, password, enable_username, enable_password)
 
-	if via == 'telnet':
-		session = Telnet.Telnet(device, username, password, enable_username, enable_password)
-	if via == 'ssh':
-		session = Secure_Shell.Secure_Shell(device, username, password, enable_username, enable_password)
-	if session.login():
-		if session.enter_enable_mode():
-			# Now create configuration and save out to a unique file
-        		excel = Excel_Reader.Excel_Reader(self._excel_file)
-        		template_file_name = excel.get_template_name_for_key(excel_key)
-        		variables = excel.get_variables_for_key(excel_key)
+	(success, config) = create_configuration(name, self._excel_file, self._template_dir, additional_variables)
 
-                        # add additional variables
-                        try:
-                                additional_variables = json.loads(additional_variables)
-                        except ValueError as e:
-                                sys.stderr.write("additional_variables is not in JSON format!\r\n")
-                                return (False,"Broken")
-
-                        # check to see if there is any overlap with excel and warn!
-                        for var in additional_variables:
-                                if var in variables:
-                                        sys.stdout.write("Warning: additional variable '%s' is overriding excel variable\r\n" % var)
-
-                        # update the dictionary file with the new variables
-                        variables.update(additional_variables)
-
-        		if (template_file_name != ""):
-                		parse = Template_Parser.Template_Parser("%s/%s" % (self._template_dir,template_file_name))
-                		parse.set_variables(variables)
-
-				# Check to make sure all variables have answers
-				parse_success = True
-				for v in parse.get_required_variables():
-					if not v in variables:
-						sys.stderr.write("Could not find variable '%s' in excel for template '%s'\r\n" % (v,template_file_name))
-						parse_success = False
-				if not parse_success:
-					return (False,"Broken")
-						
-
+        if success:
+		session = ztp_utils.start_session(device, username, password, enable_username, enable_password, via)
+		if session.login():
+			if session.enter_enable_mode():
 				try:
                 			file = open(self._filename,'w')
-                			file.write(parse.get_parsed_lines())
+                			file.write(config)
                 			file.close()
 				except IOError:
 					sys.stderr.write("Could not write out configuration to temp file on server\r\n")
 					session.logout()
-					return (False,"Broken")
+					return (False,"Failed")
 
-				scp = Secure_Copy.Secure_Copy(device, username, password)
+				scp = Secure_Copy.Secure_Copy(device, self._username, self._password)
 		
 				# TODO: This should be done when generate_keys is done
 				scp.erase_existing_ssh_key_for_host()
@@ -87,12 +49,8 @@ class TransferZTPConfigurationAction(Action):
 				if scp.send_file(self._filename,'StartConfig'):
 					session.reload(writemem=False)
                         		os.remove(self._filename)
-					return (True,"Worked")
+					return (True,"Success")
 					
                         	os.remove(self._filename)
-			else:
-				# Something went wrong with creating configuration
-				sys.stderr.write("No template defined in excel spreadsheet\r\n") 
-				session.logout()
 
-	return (False,"Broken")
+	return (False,"Failed")

@@ -1,5 +1,56 @@
-import re
-import Session
+"""
+Copyright 2016 Brocade Communications Systems, Inc.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
+import re, json
+import Session, Telnet, Secure_Shell
+import Template_Parser, Excel_Reader
+
+def create_configuration(device, excel_file, template_dir, additional_variables):
+        excel = Excel_Reader.Excel_Reader(excel_file)
+        template_file_name = excel.get_template_name_for_key(device)
+        variables = excel.get_variables_for_key(device)
+
+        # add additional variables
+        try:
+                additional_variables = json.loads(additional_variables)
+        except ValueError as e:
+                sys.stderr.write("additional_variables is not in JSON format!\r\n")
+                return (False,"Failed")
+
+        # check to see if there is any overlap with excel and warn!
+        for var in additional_variables:
+                if var in variables:
+                        sys.stdout.write("Warning: additional variable '%s' is overriding excel variable\r\n" % var)
+
+        # update the dictionary file with the new variables
+        variables.update(additional_variables)
+
+        if (template_file_name != ""):
+                parse = Template_Parser.Template_Parser("%s/%s" % (template_dir,template_file_name))
+                parse.set_variables(variables)
+
+                # Check to make sure all variables have answers
+                parse_success = True
+                for v in parse.get_required_variables():
+                        if not v in variables:
+                                sys.stderr.write("Could not find variable '%s' in excel for template '%s'\r\n" % (v,template_file_name))
+                                parse_success = False
+                if not parse_success:
+                        return (False,"Failed")
+
+                return (True,parse.get_parsed_lines())
+        else:
+                return (False,"Failed")
 
 def compare_versions(existing_version, new_version):
         ''' Input: ##.##.##aa  Output: True if the existing code is less the new.'''
@@ -36,3 +87,22 @@ def send_commands_to_session(session, command, conf_mode=False):
 
                         return (True,output)
 	return (False,{})
+
+def replace_default_userpass(action, username, password, enable_username, enable_password):
+	if username:
+                action._username = username
+        if password:
+                action._password = password
+        if enable_username:
+                action._enable_username = enable_username
+        if enable_password:
+                action._enable_password = enable_password
+
+def start_session(device, username, password, enable_username, enable_password, via):
+	session = None
+        if via == 'telnet':
+                session = Telnet.Telnet(device, username, password, enable_username, enable_password)
+        if via == 'ssh':
+                session = Secure_Shell.Secure_Shell(device, username, password, enable_username, enable_password)
+	return session
+

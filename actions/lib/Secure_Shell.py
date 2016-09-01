@@ -1,3 +1,16 @@
+"""
+Copyright 2016 Brocade Communications Systems, Inc.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
 import Session
 import pexpect
 import sys
@@ -8,7 +21,7 @@ class Secure_Shell(Session.Session):
 		''' Attempt to Login to Device '''
 		COMMAND="ssh %s@%s" % (self.username,self.hostname)
 		self.session = pexpect.spawn(COMMAND)
-		self.session.logfile = open('sshlog','w')
+		self.session.logfile = open('/tmp/campus_ztp.sshlog','w')
 		i = self.session.expect(['timed out','assword:','yes/no','failed',pexpect.TIMEOUT],timeout=30)
 		if i==0:
 			sys.stderr.write("SSH Connection to '%s' timed out" % self.hostname)

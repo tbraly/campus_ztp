@@ -1,18 +1,23 @@
 ---
-name: "send_monitor_command"
+name: "send_cli_command"
 runner_type: "run-python"
-description: "sends a configuration command to the device in configuration mode"
+description: "send cli command(s) to the device(s)"
 enabled: true
-entry_point: "send_monitor_command.py"
+entry_point: "send_cli_command.py"
 parameters:
   device:
     type: "string"
-    description: "ip or hostname of the switch"
+    description: "ip or hostname of the switch(s) seperated by a comma"
     required: true
   command:
     type: "string"
-    description: "monitor command"
+    description: "cli command(s) seperated by a semicolon"
     required: true
+  conf_mode:
+    type: "boolean"
+    description: "enter in configuration mode"
+    required: true
+    default: False
   username:
     type: "string"
     description: "override configured username"

@@ -22,14 +22,14 @@ This integration pack allows you ZTP provision campus access switches
 | campus_ztp.is_boot_code_current        | campus_ztp | checks to see if boot code is current                    |
 | campus_ztp.is_image_current            | campus_ztp | checks to see if image is current                        |
 | campus_ztp.secure_copy                 | campus_ztp | secure copies with interactive login                     |
-| campus_ztp.send_configuration_command  | campus_ztp | sends a configuration command to the device in           |
-|                                        |            | configuration mode                                       |
-| campus_ztp.send_monitor_command        | campus_ztp | sends a monitor command to the device in privledge       |
-|                                        |            | mode                                                     |
-| campus_ztp.set_hostname                | campus_ztp | sets the hostname on a box                               |
+| campus_ztp.send_cli_command            | campus_ztp | sends cli command(s) to the device(s)                    |
 | campus_ztp.transfer_ztp_configuration  | campus_ztp | builds startup configuration, telnets to device,         |
 |                                        |            | transfers config via SCP from server, and reloads switch |
 | campus_ztp.upgrade_boot_code           | campus_ztp | upgrades the boot code via tftp                          |
 | campus_ztp.upgrade_image               | campus_ztp | upgrades the image via tftp                              |
 +----------------------------------------+------------+----------------------------------------------------------+
 ```
+
+## License
+
+Campus_ZTP is released under the APACHE 2.0 license. See ./LICENSE for more information.

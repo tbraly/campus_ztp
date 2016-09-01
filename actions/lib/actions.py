@@ -13,13 +13,10 @@ limitations under the License.
 
 from st2actions.runners.pythonrunner import Action
 
-import time
-
-class DelayAction(Action):
+class SessionAction(Action):
     def __init__(self, config):
-        super(DelayAction, self).__init__(config)
-
-    def run(self, seconds):
-	time.sleep(seconds)
-        return True
-
+        super(SessionAction, self).__init__(config)
+        self._username = self.config['username']
+        self._password = self.config['password']
+        self._enable_username = self.config['enable_username']
+        self._enable_password = self.config['enable_password']

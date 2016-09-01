@@ -1,9 +1,18 @@
+"""
+Copyright 2016 Brocade Communications Systems, Inc.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
 from st2actions.runners.pythonrunner import Action
-
-from lib import Template_Parser
-from lib import Excel_Reader
-
-import sys,json
+from lib import ztp_utils
 
 class GetConfigurationAction(Action):
     def __init__(self, config):
@@ -12,40 +21,5 @@ class GetConfigurationAction(Action):
         self._excel_file = self.config['excel_file']
 
     def run(self, name, additional_variables='{}'):
-	excel = Excel_Reader.Excel_Reader(self._excel_file)
-        template_file_name = excel.get_template_name_for_key(name)
-        variables = excel.get_variables_for_key(name)
-
-        # add additional variables
-        try:
-                additional_variables = json.loads(additional_variables)
-        except ValueError as e:
-                sys.stderr.write("additional_variables is not in JSON format!\r\n")
-                return (False,"Broken")
-
-        # check to see if there is any overlap with excel and warn!
-        for var in additional_variables:
-                if var in variables:
-                        sys.stdout.write("Warning: additional variable '%s' is overriding excel variable\r\n" % var)
-
-        # update the dictionary file with the new variables
-        variables.update(additional_variables)
-
-        if (template_file_name != ""):
-        	parse = Template_Parser.Template_Parser("%s/%s" % (self._template_dir,template_file_name))
-                parse.set_variables(variables)
-
-		# Check to make sure all variables have answers
-                parse_success = True
-                for v in parse.get_required_variables():
-                	if not v in variables:
-                        	sys.stderr.write("Could not find variable '%s' in excel for template '%s'\r\n" % (v,template_file_name))
-                                parse_success = False
-                if not parse_success:
-                	return (False,"Broken")
-
-                return (True,parse.get_parsed_lines())
-	else:
-		return (False,"Does not work")
-
+	return ztp_utils.create_configuration(name, self._excel_file, self._template_dir, additional_variables)
 
