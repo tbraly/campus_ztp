@@ -1,16 +1,3 @@
-"""
-Copyright 2016 Brocade Communications Systems, Inc.
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-    http://www.apache.org/licenses/LICENSE-2.0
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-"""
-
 from openpyxl import Workbook,load_workbook
 
 import sys
@@ -20,24 +7,30 @@ class Excel_Reader(object):
         def __init__(self,excel_file, sheet_name = 'SWITCHES', variable_name_row = 1, key_column = 1, template_column = 2, variable_start_column = 3):
                 ''' Loads the excel configuration file '''
                 try:
+			# TODO: Check is file is locked, if so wait and try to open N more times after N seconds.
                         self._wb = load_workbook(excel_file)
+			self._filename = excel_file
                 except:
                         raise Exception("Could not load spreadsheet '%s'" % excel_file)
 
                 self.set_excel_sheet(sheet_name)
                 self.set_variable_name_row(variable_name_row)
-                self.set_variable_start_column(variable_start_column)
-                self.set_key_column(key_column)
                 self.set_template_column(template_column)
+		self.set_data_start_row(variable_name_row+1)
+                self.set_key_column(key_column)
+                self.set_variable_start_column(variable_start_column)
 
-        def set_variable_name_row(self, variable_name_row):
-                ''' Set the row where the variable names are '''
-                self._variable_name_row = variable_name_row
-                self._data_start_row = variable_name_row + 1
+	def save(self):
+		''' Saves spreadsheet to disk '''
+		self._wb.save(self._filename)
 
         def set_data_start_row(self, data_start_row):
                 ''' Set the row in the sheet where the data starts '''
                 self._data_start_row = data_start_row
+
+        def set_variable_name_row(self, variable_name_row):
+                ''' Set the row where the variable names are '''
+                self._variable_name_row = variable_name_row
 
         def set_key_column(self, key_column):
                 ''' Set the key column in the template '''
@@ -54,8 +47,11 @@ class Excel_Reader(object):
                                         raise Exception("Duplicate key '%s' found at row '%s'." % (key.value,r))
                 
                         else:
+				self._data_end_row = r
                                 break
                         r+=1
+	
+		
 
         def set_template_column(self, template_column):
                 ''' Set the template column in the template '''
@@ -78,7 +74,9 @@ class Excel_Reader(object):
                 try:
                         self._ws = self._wb.get_sheet_by_name(self._sheet_name)
                 except:
-                        raise Exception("Could not find the sheet named '%s'" % self._sheet_name)
+			self._ws = self._wb.create_sheet(self._sheet_name)
+
+		#TODO: re-set all the variables
 
         def get_row_for_key(self, key):
                 ''' Returns the row for a given key, or -1 if not matched '''
@@ -104,4 +102,59 @@ class Excel_Reader(object):
                 if (row>=0):
                         return self._ws.cell(column=self._template_column, row=row).value
                 return ""
+
+	def get_last_row(self):
+		return self._data_end_row
+
+	def set_values_for_variables(self, key, dict):
+		# TODO: Need to probably lock file!
+
+		assert(key in dict)
+
+		# Build a dictionary of variables in the spreadsheet
+		variables = {}
+		col = self._variable_start_column
+		while (True):
+			variable = self._ws.cell(column=col, row=self._variable_name_row)
+			if (variable.value):
+				variables[variable.value] = col
+			else:
+				self._variable_end_column = col
+				break
+			col+=1
+
+		print(variables)
+
+		print ("Variable_start_column: %d" % self._variable_start_column)
+		print ("Variable_end_column  : %d" % self._variable_end_column)
+		print ("Data_start_row       : %d" % self._data_start_row)
+		print ("Data_end_row         : %d" % self._data_end_row)
+
+		# Find row for key
+		print("Find row for key....")
+		row = self.get_row_for_key(dict[key])
+		if row == -1:
+			if (self._data_end_row == self._data_start_row):
+				self._ws.cell(column=self._key_column,row=self._variable_name_row).value = key
+			row = self._data_end_row
+			self._ws.cell(column=self._key_column,row=row).value = dict[key]
+			self._data_end_row += 1
+			
+		else:
+			print("   row found at %d" % row)
+
+		# Fill in values
+		print("Filling in values....")
+		for k, v in dict.items():
+			if not k == key:
+				if k in variables:
+					self._ws.cell(column=variables[k],row=row).value = v
+				else:
+					# Add a new column at the end with variable
+					print("Adding a new column")
+					print("(%d,%d)" % (self._variable_end_column, self._variable_name_row))
+					self._ws.cell(column=self._variable_end_column,row=self._variable_name_row).value = k
+					print("(%d,%d)" % (self._variable_end_column, row))
+					self._ws.cell(column=self._variable_end_column,row=row).value = v
+					self._variable_end_column += 1
 

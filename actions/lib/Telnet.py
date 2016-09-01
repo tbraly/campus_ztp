@@ -21,66 +21,75 @@ class Telnet(Session.Session):
 		''' Attempt to Login to Device '''
 		#self.session_lf = '\r'
 		COMMAND="telnet %s" % (self.hostname)
-		try:
-			self.session = pexpect.spawn(COMMAND)
-			self.session.logfile = open('/tmp/telnetlog','w')
+		self.session = pexpect.spawn(COMMAND)
+		self.session.logfile = open('/tmp/telnetlog','w')
 
-			i = self.session.expect([pexpect.TIMEOUT, 'assword:','Name:','>'],timeout=500)
-			if i==0 :
-				# Connection Timed out
-				sys.stderr.write("Connection to '%s' timed out." % self.hostname)
-				return False
-			if i==1 :
-				# is just asking for telnet password
-				self.sendline(self.password)
-			if i==2 :
-				# is asking for username and password
-				self.sendline(self.username)
-				self.session.expect('assword:')
-				self.sendline(self.password)
-			if i==3 :
-				# no username or password required
-				self.session_state = Session.Session.SESSION_AVAILABLE
-				# Lets see if this is a CER!!!!
-				ok = self.CER_check_and_fix()
-				self.session_prompt = "%s" % self.session.before.split()[-1]
-				return ok
+		matches = ["Press <Enter> to accept and continue the login process....",
+			   "User Access Verification",
+		           "telnet@(.)+>",
+			   "Unable to connect",
+			   pexpect.TIMEOUT] 
 
-			# Should be logged in at this point
-			i = self.session.expect(['assword:','Name:','>','#',pexpect.TIMEOUT],timeout=3)
-			if i<2 :
-				# incorrect credentials
-				# TODO: Terminate Login
-				sys.stderr.write("Invalid login username/password for '%s'" % self.hostname)
-				return False
-			if i==2 :
-				self.session_state = Session.Session.SESSION_AVAILABLE
-			if i==3 :
-				self.session_state = Session.Session.PRIVILEDGE_MODE
-			if i==4 :
-				sys.stderr.write("Login process timed out")
-				return False
+		while (True):
 
-			ok = self.CER_check_and_fix()
-			self.session_prompt = "%s" % self.session.before.split()[-1]
-			return ok
-			
-		except:
-			# Telnet timeout
-			sys.stderr.write("Unable to telnet to '%s'" % self.hostname)
+			i = self.session.expect(matches)
+
+			if i==0:   # NEED TO ACK BANNER
+				self.sendline('')
+
+			if i==1:   # NEED USER ACCESS VERIFICAITON
+				while (True):
+					j = self.session.expect(['Password:','Login Name:'])
+					if j==0:
+						self.sendline(self.password)
+					if j==1:
+						self.sendline(self.username)
+						m = self.session.expect(['Password:',pexpect.TIMEOUT],timeout=5)
+						if m==0:
+							self.sendline(self.password)
+						if m==1:
+							# Could this be a CER?
+							self.session_lf = '\r'
+							self.sendline('')
+							continue
+
+					k = self.session.expect(['successful','failure',pexpect.TIMEOUT])
+					if k==0:
+						sys.stdout.write("Logged into %s successful\r\n" % self.hostname)
+						self.session.expect(['telnet@(.)+#','telnet@(.)+>'])
+                        			self.session_prompt = "%s" % self.session.after[0:-1]
+						if self.session.after[-1]=='>':
+							self.session_state = Session.Session.SESSION_AVAILABLE
+							return True
+						if self.session.after[-1]=='#':
+							self.session_state = Session.Session.PRIVILEDGE_MODE
+							return True
 		
-			# Command timeout
-			return False
-	
-	def CER_check_and_fix(self):
-		''' Check to see if we need to do \r along with \n on commands! '''
-		self.sendline('')
-		i = self.session.expect(['>','#',pexpect.TIMEOUT],timeout=2)
-		if i==2:
-			self.session_lf = '\r'
-			self.sendline('')
-			i = self.session.expect(['>','#',pexpect.TIMEOUT],timeout=2)
-			if i==2:
-				sys.stderr.write("CER Check Failed")
+					if k==1:
+						sys.stderr.write("Invalid User/Pass for %s\r\n" % self.hostname)
+						return False
+					if k==2:
+						# Could this be a CER?
+						self.session_lf = '\r'
+						self.sendline('')
+				
+			if i==2:   # NO PASSWORDS
+				sys.stdout.write("Logged into %s without any passwords\r\n" % self.hostname)
+				self.sendline('')
+                        	self.session_prompt = "%s" % self.session.after[0:-1]
+				self.session_state = Session.Session.SESSION_AVAILABLE
+				return True
+
+			if i==3:   # UNABLE TO CONNECT
+				sys.stderr.write("Could not connect to %s\r\n" % self.hostname)
 				return False
-		return True	
+
+			if i==4:   # TIMEOUT
+				# Could this be a CER?
+				if not self.session_lf:
+					self.session_lf = '\r'
+					self.sendline('')
+				else:	
+					sys.stderr.write("Timed out trying to connect to %s\r\n" % self.hostname)
+					return False
+

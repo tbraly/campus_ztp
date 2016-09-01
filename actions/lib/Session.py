@@ -33,7 +33,7 @@ class Session(object):
 		if self.session_state == Session.SESSION_AVAILABLE:
 			prompt = self.session_prompt
 			self.sendline('enable')
-			c = self.session.expect(['assword:','sername:','%s#' % prompt,pexpect.TIMEOUT])
+			c = self.session.expect(['assword:','Name:','%s#' % prompt,pexpect.TIMEOUT])
 			if c==0 :
 				# is just asking for enable password
 				self.sendline(self.enable_password)
@@ -51,7 +51,7 @@ class Session(object):
 				return False
 
 			# double check we are in enable mode
-			i = self.session.expect(['assword:','sername:','%s>' % prompt,'%s#' % prompt])
+			i = self.session.expect(['assword:','Name:','%s>' % prompt,'%s#' % prompt])
 			if i<3 :
 				# incorrect credentials
 				# TODO: Terminate Login

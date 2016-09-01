@@ -1,0 +1,20 @@
+---
+name: "update_spreadsheet"
+runner_type: "run-python"
+description: "adds/updates variables to a spreadsheet"
+enabled: true
+entry_point: "update_spreadsheet.py"
+parameters:
+  sheetname:
+    type: "string"
+    description: "name of sheet"
+    required: true
+  key:
+    type: "string"
+    description: "key field for row"
+    required: true
+  variables:
+    type: "string"
+    description: "variables in JSON format"
+    required: true
+  
