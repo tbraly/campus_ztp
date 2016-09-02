@@ -11,22 +11,22 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from lib import action, Session, Secure_Copy, ztp_utils
+from lib import actions, Session, Secure_Copy, ztp_utils
 
 import sys, os, uuid, json
 
-class TransferZTPConfigurationAction(action.SessionAction):
+class TransferZTPConfigurationAction(actions.SessionAction):
     def __init__(self, config):
         super(TransferZTPConfigurationAction, self).__init__(config)
         self._template_dir = self.config['template_dir']
         self._excel_file = self.config['excel_file']
         self._temp_dir = self.config['temp_dir']
-        self._filename = "%s/%s" % (self._temp_dir,uuid.uuid4())
+        self._filename = "%s%s" % (self._temp_dir,uuid.uuid4())
 
     def run(self, via, device, excel_key, additional_variables='{}', username='', password='', enable_username='', enable_password=''):
         ztp_utils.replace_default_userpass(self, username, password, enable_username, enable_password)
 
-	(success, config) = create_configuration(name, self._excel_file, self._template_dir, additional_variables)
+	(success, config) = ztp_utils.create_configuration(excel_key, self._excel_file, self._template_dir, additional_variables)
 
         if success:
 		session = ztp_utils.start_session(device, username, password, enable_username, enable_password, via)
