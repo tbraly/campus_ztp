@@ -77,6 +77,12 @@ class Telnet(Session.Session):
 				sys.stdout.write("Logged into %s without any passwords\r\n" % self.hostname)
 				self.sendline('')
                         	self.session_prompt = "%s" % self.session.after[0:-1]
+				# Is this a CER?
+				self.sendline('')
+				j = self.session.expect(['%s>' % self.session_prompt, pexpect.TIMEOUT],timeout=3)
+				if j==1:  # TIMEOUT
+					self.session_lf = '\r'
+					self.sendline('')
 				self.session_state = Session.Session.SESSION_AVAILABLE
 				return True
 
