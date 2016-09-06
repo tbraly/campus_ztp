@@ -1,0 +1,52 @@
+---
+name: "send_cli_template"
+runner_type: "run-python"
+description: "send cli template to the device(s)"
+enabled: true
+entry_point: "send_cli_template.py"
+parameters:
+  device:
+    type: "string"
+    description: "ip or hostname of the switch(s) seperated by a comma"
+    required: true
+  template:
+    type: "string"
+    description: "JINJA2 template to use"
+    required: true
+  template_dir:
+    type: "string"
+    description: "overide template directory"
+    required: false
+  variables:
+    type: "string"
+    description: "template variables in JSON format"
+    required: false
+  conf_mode:
+    type: "boolean"
+    description: "enter in configuration mode"
+    required: true
+    default: true
+  username:
+    type: "string"
+    description: "override configured username"
+    required: false
+  password:
+    type: "string"
+    description: "override configured password"
+    required: false
+  enable_username:
+    type: "string"
+    description: "override configured enable username"
+    required: false
+  enable_password:
+    type: "string"
+    description: "override configured enable password"
+    required: false
+  via:
+    type: "string"
+    description: "what way?"
+    enum:
+      - "telnet"
+      - "ssh"
+    default: "ssh"
+  

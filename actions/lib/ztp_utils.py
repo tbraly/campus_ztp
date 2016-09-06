@@ -11,9 +11,33 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import re, json
+import re, json, sys
 import Session, Telnet, Secure_Shell
 import Template_Parser, Excel_Reader
+
+def process_template(template_file_name, template_dir, variables):
+	''' Loads JINJA2 template and process it with supplied variables '''
+        if (template_file_name != ""):
+		try:
+                	parse = Template_Parser.Template_Parser("%s/%s" % (template_dir,template_file_name))
+		except IOError:
+			sys.stderr.write("Could not load template file '%s/%s'" % (template_dir,template_file_name))
+			return (False,"Failed")
+                parse.set_variables(variables)
+
+                # Check to make sure all variables have answers
+                parse_success = True
+                for v in parse.get_required_variables():
+			if (not variables) or (variables and not v in variables):
+                                sys.stderr.write("Could not find variable '%s' for template '%s'\r\n" % (v,template_file_name))
+                                parse_success = False
+                if not parse_success:
+                        return (False,"Failed")
+
+                return (True,parse.get_parsed_lines())
+        else:
+                return (False,"Failed")
+
 
 def create_configuration(device, excel_file, template_dir, additional_variables):
         excel = Excel_Reader.Excel_Reader(excel_file)
@@ -35,22 +59,7 @@ def create_configuration(device, excel_file, template_dir, additional_variables)
         # update the dictionary file with the new variables
         variables.update(additional_variables)
 
-        if (template_file_name != ""):
-                parse = Template_Parser.Template_Parser("%s/%s" % (template_dir,template_file_name))
-                parse.set_variables(variables)
-
-                # Check to make sure all variables have answers
-                parse_success = True
-                for v in parse.get_required_variables():
-                        if not v in variables:
-                                sys.stderr.write("Could not find variable '%s' in excel for template '%s'\r\n" % (v,template_file_name))
-                                parse_success = False
-                if not parse_success:
-                        return (False,"Failed")
-
-                return (True,parse.get_parsed_lines())
-        else:
-                return (False,"Failed")
+	return process_template(template_file_name, template_dir, variables)
 
 def compare_versions(existing_version, new_version):
         ''' Input: ##.##.##aa  Output: True if the existing code is less the new.'''
@@ -72,7 +81,12 @@ def compare_versions(existing_version, new_version):
 def send_commands_to_session(session, command, conf_mode=False):
 	''' sends a series of cli lines to a device (seperated by ';') '''
         output = []
-        commands = command.split(';');
+
+	# if command list comes in seperated by newline, replace with ';'
+	command = command.replace('\n',';')
+
+	# split command list into individual lines
+	commands = command.split(';')
 
         if session.login():
                 if session.enter_enable_mode():

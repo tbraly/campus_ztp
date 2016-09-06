@@ -23,7 +23,7 @@ class Template_Parser(object):
                         with open(configuration_template_file,'r') as f:
                                 self.profile = "".join(line for line in f)
                 except:
-                        raise Exception("Template file '%s' not found!", configuration_template_file)
+                        raise IOError("Template file '%s' not found!", configuration_template_file)
 
         def set_variables(self,variables):
                 ''' Sets the variables '''
