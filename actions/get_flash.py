@@ -45,15 +45,15 @@ class GetFlashAction(actions.SessionAction):
                 match = primary.match(line)
                 if match:
                     version = match.group().split(':')[-1].split()[0]
-                    flash[unit_number].update({'primary':version})
+                    flash[unit_number].update({'primary': version})
                 match = secondary.match(line)
                 if match:
                     version = match.group().split(':')[-1].split()[0]
-                    flash[unit_number].update({'secondary':version})
+                    flash[unit_number].update({'secondary': version})
                 match = boot.match(line)
                 if match:
                     version = match.group().split(':')[-1].split()[0]
-                    flash[unit_number].update({'boot':version})
+                    flash[unit_number].update({'boot': version})
 
             return (True, json.dumps(flash))
 

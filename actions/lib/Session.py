@@ -153,7 +153,7 @@ class Session(object):
             # skip first line, as it's just a repeat of the command
             if i > 0:
                 output.append(self.session.before)
-            i = i+1
+            i = i + 1
 
         return output
 
