@@ -11,10 +11,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from st2actions.runners.pythonrunner import Action
-
 import json
+from st2actions.runners.pythonrunner import Action
 from lib import ztp_utils
+
 
 class IsBootCodeCurrentAction(Action):
     def __init__(self, config):
@@ -30,12 +30,12 @@ class IsBootCodeCurrentAction(Action):
 
         # Strip off everything but numbers and patch
         new_boot = self._boot_image.split('.')[0]
-        new_boot = "%s.%s.%s" % (new_boot[3:5],new_boot[5:6],new_boot[6:])
+        new_boot = "%s.%s.%s" % (new_boot[3:5], new_boot[5:6], new_boot[6:])
 
         if boot == new_boot:
-                return (True,"Existing code is the same")
+            return (True, "Existing code is the same")
 
-        if keep_better=='yes' and ztp_utils.compare_versions(boot, new_boot):
-                return (True,"Existing code is better")
+        if keep_better == 'yes' and ztp_utils.compare_versions(boot, new_boot):
+            return (True, "Existing code is better")
 
-        return (False,"Existing code needs upgrading")
+        return (False, "Existing code needs upgrading")

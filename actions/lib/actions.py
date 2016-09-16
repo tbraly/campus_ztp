@@ -13,6 +13,7 @@ limitations under the License.
 
 from st2actions.runners.pythonrunner import Action
 
+
 class SessionAction(Action):
     def __init__(self, config):
         super(SessionAction, self).__init__(config)

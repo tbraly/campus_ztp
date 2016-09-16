@@ -14,6 +14,7 @@ limitations under the License.
 from st2actions.runners.pythonrunner import Action
 from lib import ztp_utils
 
+
 class GetConfigurationAction(Action):
     def __init__(self, config):
         super(GetConfigurationAction, self).__init__(config)
@@ -21,5 +22,5 @@ class GetConfigurationAction(Action):
         self._excel_file = self.config['excel_file']
 
     def run(self, name, additional_variables='{}'):
-	return ztp_utils.create_configuration(name, self._excel_file, self._template_dir, additional_variables)
-
+        return ztp_utils.create_configuration(name, self._excel_file,
+                                              self._template_dir, additional_variables)

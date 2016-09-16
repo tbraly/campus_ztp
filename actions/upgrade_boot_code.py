@@ -13,28 +13,30 @@ limitations under the License.
 
 from lib import actions, ztp_utils
 
+
 class UpgradeBootCodeAction(actions.SessionAction):
     def __init__(self, config):
         super(UpgradeBootCodeAction, self).__init__(config)
         self._tftpserver = self.config['tftp_server']
         self._filename = self.config['boot_image']
 
-    def run(self, via, device, tftp_server='', filename='', username='', password='', enable_username='', enable_password=''):
-        ztp_utils.replace_default_userpass(self, username, password, enable_username, enable_password)
+    def run(self, via, device, tftp_server='', filename='', username='',
+            password='', enable_username='', enable_password=''):
+        ztp_utils.replace_default_userpass(self, username,
+                                           password, enable_username, enable_password)
 
-	if tftp_server:
-		self._tftpserver = tftp_server
-	if filename:
-		self._filename = filename
+        if tftp_server:
+            self._tftpserver = tftp_server
+        if filename:
+            self._filename = filename
 
-        session = ztp_utils.start_session(device, self._username, self._password, self._enable_username, self._enable_password, via)
+        session = ztp_utils.start_session(device, self._username, self._password,
+                                          self._enable_username, self._enable_password, via)
 
-	if session.login():
-		if session.enter_enable_mode():
-			if session.upgrade_bootcode_by_tftp(self._tftpserver,self._filename):
-				session.logout()
-                		return (True,"Success")
-	
-	return (False,"Failed")
+        if session.login():
+            if session.enter_enable_mode():
+                if session.upgrade_bootcode_by_tftp(self._tftpserver, self._filename):
+                    session.logout()
+                    return (True, "Success")
 
-
+        return (False, "Failed")

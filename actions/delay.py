@@ -11,15 +11,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import time
 from st2actions.runners.pythonrunner import Action
 
-import time
 
 class DelayAction(Action):
     def __init__(self, config):
         super(DelayAction, self).__init__(config)
 
     def run(self, seconds):
-	time.sleep(seconds)
+        time.sleep(seconds)
         return True
-

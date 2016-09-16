@@ -11,10 +11,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from st2actions.runners.pythonrunner import Action
-
 import json
+from st2actions.runners.pythonrunner import Action
 from lib import ztp_utils
+
 
 class IsImageCurrentAction(Action):
     def __init__(self, config):
@@ -30,12 +30,12 @@ class IsImageCurrentAction(Action):
 
         # Strip off everything but numbers and patch
         self._image = self._image.split('.')[0]
-        new_image = "%s.%s.%s" % (self._image[3:5],self._image[5:6],self._image[6:])
+        new_image = "%s.%s.%s" % (self._image[3:5], self._image[5:6], self._image[6:])
 
         if image == new_image:
-                return (True,"Existing code is the same")
+            return (True, "Existing code is the same")
 
-        if keep_better=='yes' and ztp_utils.compare_versions(image, new_image):
-                return (True,"Existing code is better")
+        if keep_better == 'yes' and ztp_utils.compare_versions(image, new_image):
+            return (True, "Existing code is better")
 
-        return (False,"Existing code needs upgrading")
+        return (False, "Existing code needs upgrading")

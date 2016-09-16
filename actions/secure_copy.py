@@ -11,27 +11,27 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from lib import action, Secure_Copy, ztp_utils
+from lib import actions, Secure_Copy, ztp_utils
 
-class SecureCopyAction(action.SessionAction):
+
+class SecureCopyAction(actions.SessionAction):
     def __init__(self, config):
         super(SecureCopyAction, self).__init__(config)
 
     def run(self, hostname, source, destination, direction, username='', password=''):
-	ztp_utils.replace_default_userpass(self, username, password, enable_username='', enable_password='')
+        ztp_utils.replace_default_userpass(self, username, password,
+                                           enable_username='', enable_password='')
 
-	scp = Secure_Copy.Secure_Copy(hostname, self._username, self._password)
+        scp = Secure_Copy.Secure_Copy(hostname, self._username, self._password)
 
-	# TODO: This should be done when keys are re-generated
-	scp.erase_existing_ssh_key_for_host()
+        # TODO: This should be done when keys are re-generated
+        scp.erase_existing_ssh_key_for_host()
 
-	if direction == 'to':
-		success = scp.send_file(source,destination)
-	if direction == 'from':
-		success = scp.get_file(source,destination)
-	if success:
-                return (True,"File Copied!")
-	else:
-		return (False,"Failed")
-
-
+        if direction == 'to':
+            success = scp.send_file(source, destination)
+        if direction == 'from':
+            success = scp.get_file(source, destination)
+        if success:
+            return (True, "File Copied!")
+        else:
+            return (False, "Failed")

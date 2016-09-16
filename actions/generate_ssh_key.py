@@ -11,24 +11,26 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from lib import actions, ztp_utils, Session
+from lib import actions, ztp_utils
+
 
 class SetSSHKeyAction(actions.SessionAction):
     def __init__(self, config):
         super(SetSSHKeyAction, self).__init__(config)
 
-    def run(self, via, device, keytype='rsa', modulus='2048', username='', password='', enable_username='', enable_password=''):
-        ztp_utils.replace_default_userpass(self, username, password, enable_username, enable_password)
-        session = ztp_utils.start_session(device, username, password, enable_username, enable_password, via)
+    def run(self, via, device, keytype='rsa',
+            modulus='2048', username='', password='', enable_username='', enable_password=''):
+        ztp_utils.replace_default_userpass(self, username, password,
+                                           enable_username, enable_password)
+        session = ztp_utils.start_session(device, username, password,
+                                          enable_username, enable_password, via)
 
-	if session.login():
-		if session.enter_enable_mode():
-			if session.enter_configuration_mode():
-				session.create_crypto_keys(keytype,modulus)
-				session.exit_configuration_mode()
-				session.logout()
-				return (True,"Success")
+        if session.login():
+            if session.enter_enable_mode():
+                if session.enter_configuration_mode():
+                    session.create_crypto_keys(keytype, modulus)
+                    session.exit_configuration_mode()
+                    session.logout()
+                    return (True, "Success")
 
-	return (False,"Failure")
-
-
+        return (False, "Failure")
