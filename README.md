@@ -1,6 +1,17 @@
 # Campus ZTP Integration Pack
 
-This integration pack allows you ZTP provision campus access switches
+This integration pack works with Brocade Workflow Composer (BWC) to enhance Zero Touch Provisioning (ZTP) to reliably setup ICX campus access Ethernet switches.
+
+BWC is a platform for integration and automation across services and tools. It ties together your existing infrastructure and application environment so you can more easily automate that environment. It has a particular focus on taking actions in response to events.
+
+## Getting Started
+
+Follow these steps to get started with this integration pack.
+
+1. You will need to have BWC already installed. Follow these steps here: https://bwc-docs.brocade.com/install/bwc.html
+2. BWC architecture can be an all in one on a single box or with separate nodes for work and sensor nodes. Either way these nodes will need network connectivity to the management network with the switches being provisioned.
+3. ZTP relies on a TFTP and DHCP server which will also need to have network connectivity to the switches.
+
 
 ## Configuration
 
