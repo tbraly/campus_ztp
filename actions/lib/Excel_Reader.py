@@ -17,7 +17,7 @@ class Excel_Reader(object):
         self.set_excel_sheet(sheet_name)
         self.set_variable_name_row(variable_name_row)
         self.set_template_column(template_column)
-        self.set_data_start_row(variable_name_row+1)
+        self.set_data_start_row(variable_name_row + 1)
         self.set_key_column(key_column)
         self.set_variable_start_column(variable_start_column)
 

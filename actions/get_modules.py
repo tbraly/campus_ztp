@@ -39,7 +39,7 @@ class GetFlashAction(actions.SessionAction):
                 ports = line[50:-1].split()[1]
                 if unit != last_unit:
                     modules[unit] = []
-                modules[unit].append({"module":module, "name":module_name, "ports":ports})
+                modules[unit].append({"module": module, "name": module_name, "ports": ports})
                 last_unit = unit
 
             return (True, json.dumps(modules))

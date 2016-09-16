@@ -49,9 +49,9 @@ class SendCLITemplateAction(actions.SessionAction):
                                               self._enable_username, self._enable_password, via)
             (success, output) = ztp_utils.send_commands_to_session(session, command, conf_mode)
             if success:
-                device_output.append({"device":d, "output":output})
+                device_output.append({"device": d, "output": output})
             else:
-                device_output.append({"device":d, "output":"Failed"})
+                device_output.append({"device": d, "output": "Failed"})
                 has_failures = True
 
         if len(devices) == 1 and has_failures:
