@@ -31,12 +31,14 @@
       ref: "campus_ztp.upgrade_boot_code"
       parameters:
         device: "{{client_ip}}"
+        filename: "{{is_boot_code_current.result}}"
       on-success: "is_image_current"
     -
       name: "upgrade_image"
       ref: "campus_ztp.upgrade_image"
       parameters:
         device: "{{client_ip}}"
+        filename: "{{is_image_current.result}}"
       on-success: "generate_ssh_key"
     -
       name: "generate_ssh_key"

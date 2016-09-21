@@ -18,7 +18,6 @@ class UpgradeBootCodeAction(actions.SessionAction):
     def __init__(self, config):
         super(UpgradeBootCodeAction, self).__init__(config)
         self._tftpserver = self.config['tftp_server']
-        self._filename = self.config['boot_image']
 
     def run(self, via, device, tftp_server='', filename='', username='',
             password='', enable_username='', enable_password=''):

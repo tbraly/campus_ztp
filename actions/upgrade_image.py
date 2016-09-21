@@ -18,7 +18,6 @@ class UpgradeImageAction(actions.SessionAction):
     def __init__(self, config):
         super(UpgradeImageAction, self).__init__(config)
         self._tftpserver = self.config['tftp_server']
-        self._filename = self.config['software_image']
 
     def run(self, via, device, flash, tftp_server='', filename='', username='',
             password='', enable_username='', enable_password=''):

@@ -19,23 +19,30 @@ from lib import ztp_utils
 class IsImageCurrentAction(Action):
     def __init__(self, config):
         super(IsImageCurrentAction, self).__init__(config)
-        self._image = self.config['software_image']
+        self._images = self.config['software_images']
 
     def run(self, images, keep_better):
 
+        # {"hardware": "ICX7750-48F", "firmware": [{"version": "SWS08040A", "unit": 1}], "boot": "10.1.06T205"}
         data = json.loads(images)
 
-        # Strip off everything but numbers and patch
-        image = data["1"]["primary"].split('T')[0]
+        hardware = data['hardware'][0:7]
+        self._image=self._images['Brocade'][hardware]
+
+        # TODO: Check if existing image is router vs switch in decision to replace!
 
         # Strip off everything but numbers and patch
-        self._image = self._image.split('.')[0]
-        new_image = "%s.%s.%s" % (self._image[3:5], self._image[5:6], self._image[6:])
+        image = data["firmware"][0]['version']
+        image = "%s.%s.%s" % (image[3:5], image[5:6], image[6:])
 
-        if image == new_image:
+        # Strip off everything but numbers and patch
+        new_image = self._image.split('.')[0]
+        new_image = "%s.%s.%s" % (new_image[3:5], new_image[5:6], new_image[6:])
+
+        if image.upper() == new_image.upper():
             return (True, "Existing code is the same")
 
-        if keep_better == 'yes' and ztp_utils.compare_versions(image, new_image):
+        if keep_better == 'yes' and ztp_utils.compare_versions(image.upper(),new_image.upper()):
             return (True, "Existing code is better")
 
-        return (False, "Existing code needs upgrading")
+        return (False, self._image)
