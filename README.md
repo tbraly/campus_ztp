@@ -87,6 +87,15 @@ Save and Restart:
 sudo service apparmor restart
 ```
 
+Create 'brocade.cfg' to your TFTP directory with the following contents. It will be loaded by the switch and provide for the initial config to allow for the SCP copy of the final configuration. 
+
+```
+user admin password brocade
+aaa authentication login default local
+```
+
+Add all the neccessary boot and image files to your TFTP server directory
+
 ## Configuration 
 
 Edit the config.yaml for your environment
