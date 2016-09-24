@@ -1,0 +1,12 @@
+---
+name: "running_config_changed"
+pack: "campus_ztp"
+enabled: true
+description: "notification that the running configuration has changed"
+trigger:
+  type: "campus_ztp.running_config_changed"
+
+action:
+    ref: "campus_ztp.backup_configuration"
+    parameters:
+      device: "{{trigger.device}}"
