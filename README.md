@@ -4,7 +4,9 @@ This integration pack works with Brocade Workflow Composer (BWC) to enhance Zero
 
 BWC is a platform for integration and automation across services and tools. It ties together your existing infrastructure and application environment so you can more easily automate that environment. It has a particular focus on taking actions in response to events.
 
-This implementation of ZTP utilizes a Excel spreadsheet as the source of the variables to replace in a JINJA template that builds the final device-specific configuration that is pushed securily to the device.
+This implementation of ZTP utilizes an Excel spreadsheet as the source for variables to replace in a JINJA template. That combined information builds the final device-specific configuration that is pushed securely to the device via Secure Copy.
+
+There are additional actions to perform time-saving tasks on the network as well as perform automated backups.
 
 ## Getting Started
 
