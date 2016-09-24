@@ -12,33 +12,120 @@ Follow these steps to get started with this integration pack.
 2. BWC architecture can be an all in one on a single box or with separate nodes for work and sensor nodes. Either way these nodes will need network connectivity to the management network with the switches being provisioned.
 3. ZTP relies on a TFTP and DHCP server which will also need to have network connectivity to the switches.
 
+## Installation of Campus ZTP Pack
 
-## Configuration
+1. Fork or download the pack into the /opt/stackstorm/packs/ directory
+2. Run: st2 run packs.setup_virtualenv packs=campus-ztp
+3. Run: st2ctl reload
+4. Run: st2 rule create rules/dhcpcommit.yaml
+5. Run: st2 rule create rules/running_config_changed.yaml
+
+## Additional Setup
+
+To trigger off of DHCP, add the following lines to your isc-dhcp-server dhcpd.conf file (in addition to creating a pool for the provisioning network)::
+
+```
+#
+# BUILD A JSON RECORD OF THE INFORMATION
+#
+
+option agent.subscriber-id code 6 = text;
+option hostname code 12 = text;
+
+on commit {
+	set ClientIP = binary-to-ascii(10,8,".",leased-address);
+	set ClientMac = binary-to-ascii(16,8,":",substring(hardware,1,6));
+	set Name = option hostname;
+	set RemoteId = "";
+	set CircuitId = "";
+	set SubscriberId = "";
+	if exists agent.circuit-id
+	{
+		set RemoteId = binary-to-ascii(16,8,":",option agent.remote-id);
+
+		# For NetIron as relay:
+		set CircuitId = binary-to-ascii(10,8,"/",substring(option agent.circuit-id,2,4));
+
+		# For ICX as relay:
+		# set CircuitId = binary-to-ascii(10,8,"/",substring(option agent.circuit-id,4,4));
+	}
+	if exists agent.subscriber-id
+	{
+		set SubscriberId = option agent.subscriber-id;
+	}
+	set Json = concat("{",
+				"\"client_ip\":\"",ClientIP,"\",",
+				"\"client_mac\":\"",ClientMac,"\",",
+				"\"hostname\":\"",Name,"\",",
+				"\"remote_id\":\"",RemoteId,"\",",
+				"\"circuit_id\":\"",CircuitId,"\",",
+				"\"subscriber_id\":\"",SubscriberId,"\"",
+			  "}");
+	log(Json);
+	execute ("/etc/dhcp/st2_dhcp_webhook",Json);
+}
+```
+
+Then copy over st2_dhcp_webhook to the /etc/dhcp directory. Modify the API key with a key you generate with:
+
+```
+st2 apikey create -k -m '{"used_by":"DHCP server"}'
+```
+
+In order to let the DHCP server run the WebHook, you'll need to modify apparmor:
+
+```
+sudo vi /etc/apparmor.d/usr.sbin.dhcpd
+
+Add at the end of the file:
+
+# Campus ZTP
+/etc/dhcp/st2_dhcp_webhook cux,
+
+Save and Restart:
+
+sudo service apparmor restart
+```
+
+## Configuration 
+
+Edit the config.yaml for your environment
 
 * `templates` - directory where templates are stored
 * `excel` - location of excel spreadsheet of configuration data
+* `config_backup_dir` - location of switches backup files
+* `tmp_dir` - location where configuration file will be temporary stored before SCP
+
 
 ## Actions
 
 ```
-+----------------------------------------+------------+----------------------------------------------------------+
-| ref                                    | pack       | description                                              |
-+----------------------------------------+------------+----------------------------------------------------------+
-| campus_ztp.delay                       | campus_ztp | creates a delay                                          |
-| campus_ztp.generate_ssh_key            | campus_ztp | generates the nessessary keys to ssh into the box        |
-| campus_ztp.get_configuration           | campus_ztp | builds the switch configuration                          |
-| campus_ztp.get_flash                   | campus_ztp | gets the current flash information as a json record      |
-| campus_ztp.get_modules                 | campus_ztp | gets the modules by unit as a json record                |
-| campus_ztp.initial_configuration_chain | campus_ztp | Campus ZTP Workflow                                      |
-| campus_ztp.is_boot_code_current        | campus_ztp | checks to see if boot code is current                    |
-| campus_ztp.is_image_current            | campus_ztp | checks to see if image is current                        |
-| campus_ztp.secure_copy                 | campus_ztp | secure copies with interactive login                     |
-| campus_ztp.send_cli_command            | campus_ztp | sends cli command(s) to the device(s)                    |
-| campus_ztp.transfer_ztp_configuration  | campus_ztp | builds startup configuration, telnets to device,         |
-|                                        |            | transfers config via SCP from server, and reloads switch |
-| campus_ztp.upgrade_boot_code           | campus_ztp | upgrades the boot code via tftp                          |
-| campus_ztp.upgrade_image               | campus_ztp | upgrades the image via tftp                              |
-+----------------------------------------+------------+----------------------------------------------------------+
++-------------------------------------------------+-------------------------------------------------+
+| ref                                             | description                                     |
++-------------------------------------------------+-------------------------------------------------+
+| campus_ztp.backup_configuration                 | backups the configuration via SCP               |
+| campus_ztp.delay                                | creates a delay                                 |
+| campus_ztp.generate_ssh_key                     | generates the nessessary keys to ssh into the   |
+|                                                 | box                                             |
+| campus_ztp.get_configuration                    | builds the switch configuration                 |
+| campus_ztp.get_flash                            | gets the current flash information as a json    |
+|                                                 | record                                          |
+| campus_ztp.get_modules                          | gets the modules by unit as a json record       |
+| campus_ztp.get_version                          | gets the version information as a json record   |
+| campus_ztp.initial_configuration_chain          | Campus ZTP Workflow                             |
+| campus_ztp.is_boot_code_current                 | checks to see if boot code is current           |
+| campus_ztp.is_image_current                     | checks to see if image is current               |
+| campus_ztp.secure_copy                          | secure copies with interactive login            |
+| campus_ztp.send_cli_command                     | send cli command(s) to the device(s)            |
+| campus_ztp.send_cli_template                    | send cli template to the device(s)              |
+| campus_ztp.set_hostname                         | sets the hostname on a box                      |
+| campus_ztp.transfer_ztp_configuration           | builds startup configuration, telnets to        |
+|                                                 | device, transfers config via SCP from server,   |
+|                                                 | and reloads switch                              |
+| campus_ztp.update_spreadsheet                   | adds/updates variables to a spreadsheet         |
+| campus_ztp.upgrade_boot_code                    | upgrades the boot code via tftp                 |
+| campus_ztp.upgrade_image                        | upgrades the image via tftp                     |
++-------------------------------------------------+-------------------------------------------------+
 ```
 
 ## License
