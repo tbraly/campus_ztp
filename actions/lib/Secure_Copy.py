@@ -66,11 +66,11 @@ class Secure_Copy(object):
         return success
 
     def send_file(self, sfile, dfile):
-        command = "scp -q -oPubKeyAuthentication=no %s %s@%s:%s" % \
+        command = "scp -q -o PubKeyAuthentication=no -o StrictHostKeyChecking=no %s %s@%s:%s" % \
                   (sfile, self.username, self.hostname, dfile)
         return self.run_scp(command)
 
     def get_file(self, sfile, dfile):
-        command = "scp -q -oPubKeyAuthentication=no %s@%s:%s %s" % \
+        command = "scp -q -o PubKeyAuthentication=no -o StrictHostKeyChecking=no %s@%s:%s %s" % \
                   (self.username, self.hostname, sfile, dfile)
         return self.run_scp(command)

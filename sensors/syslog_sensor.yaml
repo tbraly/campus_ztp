@@ -1,0 +1,19 @@
+---
+  class_name: "Syslog_Sensor"
+  entry_point: "syslog_sensor.py"
+  description: "Sensor which monitors syslog for new lines"
+  trigger_types:
+    -
+      name: "running_config_changed"
+      description: "Trigger for when a running configuration change was made"
+      payload_schema:
+        type: "object"
+        properties:
+          device:
+            type: "string"
+          user:
+            type: "string"
+          ip:
+            type: "string"
+          via:
+            type: "string"

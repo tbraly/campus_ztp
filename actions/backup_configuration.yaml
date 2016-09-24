@@ -1,0 +1,19 @@
+---
+name: "backup_configuration"
+runner_type: "run-python"
+description: "backups the configuration via SCP"
+enabled: true
+entry_point: "backup_configuration.py"
+parameters:
+  device:
+    type: "string"
+    description: "ip or hostname of the switch"
+    required: true
+  username:
+    type: "string"
+    description: "override configured username"
+    required: false
+  password:
+    type: "string"
+    description: "override configured password"
+    required: false

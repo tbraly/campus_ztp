@@ -73,7 +73,7 @@ def create_configuration(device, excel_file, template_dir, additional_variables)
 def compare_versions(existing_version, new_version):
     ''' Input: ##.##.##aa  Output: True if the existing code is less the new.'''
 
-    regex = re.compile('([0-9]+)\.([0-9]+)\.([0-9]+)([a-z]*)')
+    regex = re.compile('([0-9]+)\.([0-9]+)\.([0-9]+)([a-zA-Z]*)')
 
     existing_version_match = regex.match(existing_version)
     new_version_match = regex.match(new_version)

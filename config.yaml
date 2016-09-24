@@ -2,6 +2,8 @@
 template_dir: "/opt/stackstorm/packs/campus_ztp/templates"
 excel_file: "/opt/stackstorm/packs/campus_ztp/sample.xlsx"
 temp_dir: "/opt/stackstorm/packs/campus_ztp/tmp"
+config_backup_dir: "/opt/stackstorm/packs/campus_ztp/config_archives"
+
 username: "admin"
 password: "brocade"
 enable_username: "admin"
@@ -24,3 +26,21 @@ software_images:
     ICX7250: "sps08040a.bin"
     ICX7450: "sps08040a.bin"
     ICX7750: "sws08040a.bin"
+
+# Syslog Sensor
+#
+# Note: Any triggers you define here, will need to be also added
+#       to campus_ztp/sensors/syslog_sensor.yaml
+#
+syslog_watch_sensor:
+  syslog_paths: "/var/log/switches.log"
+  triggers:
+    -
+       trigger: campus_ztp.running_config_changed
+# Jan  2 20:34:00:I:Security: running-config was changed by operator from telnet client 10.0.0.38
+       regex: "(^\\w+\\s+\\d+\\s\\d+:\\d+:\\d+ )([\\w_]+)( Security: running-config was changed by )(.+)( from )(.+)( client )(.+)"
+       groups:
+         2: "device"
+         4: "user"
+         6: "via"
+         8: "ip" 
