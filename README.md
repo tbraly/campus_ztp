@@ -85,7 +85,7 @@ device#reload
 !!! Turn on DHCP Snooping
 device(config)#ip dhcp snooping vlan 10
 
-!!! All the DHCP server to work where it's attached
+!!! Allow the DHCP server to work where it's attached
 device(config)#interface ethernet 1/1/1
 device(config-if-e10000-1/1/1)#dhcp snooping trust
 device(config-if-e10000-1/1/1)#exit
