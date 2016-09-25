@@ -19,7 +19,6 @@ import Telnet
 import Excel_Reader
 import Template_Parser
 
-
 def process_template(template_file_name, template_dir, variables):
     ''' Loads JINJA2 template and process it with supplied variables '''
     if template_file_name != "":
@@ -111,7 +110,6 @@ def send_commands_to_session(session, command, conf_mode=False):
             return (True, output)
 
     return (False, {})
-
 
 def replace_default_userpass(action, username, password, enable_username, enable_password):
     if username:

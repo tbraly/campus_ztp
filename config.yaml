@@ -4,10 +4,10 @@ excel_file: "/opt/stackstorm/packs/campus_ztp/sample.xlsx"
 temp_dir: "/opt/stackstorm/packs/campus_ztp/tmp"
 config_backup_dir: "/opt/stackstorm/packs/campus_ztp/config_archives"
 
-username: "admin"
-password: "brocade"
-enable_username: "admin"
-enable_password: "brocade"
+# Used for the SCP of ZTP configuration to device
+ztp_username: "admin"
+ztp_password: "brocade"
+
 tftp_server: "10.0.0.38"
 
 logging_watch_sensor:

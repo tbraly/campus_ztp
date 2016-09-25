@@ -3,34 +3,88 @@
 !
 
 hostname {{host_name}}
-
 ip address {{management_address}} {{management_mask}}
-
 snmp-server location {{snmp_location}}
 snmp-server contact {{snmp_contact}}
 
-vlan {{management_vlan}} name Management
+vlan {{management_vlan}} name Management by port
  tagged {{uplink_1}}
- tagged {{uplink_2}}
  management-vlan
- default-gateway {{default_gateway}} 1
-vlan {{user_vlan}} name User_Vlan
- tagged {{uplink_1}} 
- tagged {{uplink_2}} 
- untagged {{user_vlan_ports}}
-vlan {{voice_vlan}} name Voice_Vlan
- tagged {{uplink_1}}
- tagged {{uplink_2}} 
- untagged {{voice_vlan_ports}}
-vlan {{wireless_vlan}} name Wireless_Vlan
- tagged {{uplink_1}}
- untagged {{wireless_vlan_ports}}
+ default-gateway  10.0.0.1 1
 !
-int {{uplink_1}}
- dual-mode {{management_vlan}}
- speed 1000-full
+vlan 86 name Restricted_VLAN by port
+ tagged {{uplink_1}}
+ untagged ethe 1/1/45                                             
 !
-int {{uplink_2}}
+vlan 201 name User_Vlan by port
+ tagged {{uplink_1}}
+ untagged ethe 1/1/2 to 1/1/44 
+!
+vlan 1000 by port
+ tagged {{uplink_1}}
+!
+vlan 1001 by port
+ tagged {{uplink_1}}
+!
+vlan 1002 by port
+ tagged {{uplink_1}}
+!
+vlan 1003 by port
+ tagged {{uplink_1}}
+!
+vlan 1004 by port
+ tagged {{uplink_1}}
+!
+vlan 1005 by port
+ tagged {{uplink_1}}
+!                                                                 
+vlan 1006 by port
+ tagged {{uplink_1}}
+!
+vlan 1007 by port
+ tagged {{uplink_1}}
+!
+vlan 1008 by port
+ tagged {{uplink_1}}
+!
+vlan 1009 by port
+ tagged {{uplink_1}}
+!
+!
+!
+!
+authentication
+ auth-order mac-auth dot1x
+ auth-default-vlan 201
+ restricted-vlan 86
+ auth-fail-action restricted-vlan
+ mac-authentication enable
+ mac-authentication enable ethe 1/1/47 to 1/1/48 
+!                                                                 
+aaa authentication dot1x default radius
+aaa authentication login default local
+no ip dhcp-client enable
+!
+logging host 10.0.0.38 
+logging facility local0
+username stackstorm password 8 $1$RGUFFX2B$9Ohht9A4e2rjEeRzJSuzA.
+radius-server host 10.0.0.38
+radius-server key 2 $b24tbz1nIlp8OA==
+!
+interface ethernet 1/1/1
+ speed-duplex 1000-full
  dual-mode {{management_vlan}}
- speed 1000-full
-
+!
+interface ethernet 1/1/2
+ speed-duplex 1000-full
+!                                                                 
+interface ethernet 1/1/45
+ speed-duplex 1000-full
+!
+interface ethernet 1/1/47
+ speed-duplex 1000-full
+ disable
+!
+interface ethernet 1/1/48
+ speed-duplex 1000-full
+ disable

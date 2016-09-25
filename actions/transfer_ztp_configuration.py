@@ -24,6 +24,8 @@ class TransferZTPConfigurationAction(actions.SessionAction):
         self._excel_file = self.config['excel_file']
         self._temp_dir = self.config['temp_dir']
         self._filename = "%s%s" % (self._temp_dir, uuid.uuid4())
+        self._username = self.config['ztp_username']
+        self._password = self.config['ztp_password']
 
     def run(self, via, device, excel_key, additional_variables='{}', username='', password='',
             enable_username='', enable_password=''):
