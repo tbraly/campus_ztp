@@ -136,6 +136,18 @@ Edit the config.yaml for your environment
 * `config_backup_dir` - location of switches backup files
 * `tmp_dir` - location where configuration file will be temporary stored before SCP
 
+## Setting Username and Encrypted passwords in datastore
+
+Ensure that you've set up BWC for encrypted datastore. See https://docs.stackstorm.com/datastore.html
+
+And then add the following items (replacing it with your username and password)
+
+```
+st2 key set campus_ztp.username 'stackstorm'
+st2 key set campus_ztp.password 'stackstorm' --encrypt
+st2 key set campus_ztp.enable_username 'stackstorm'
+st2 key set campus_ztp.enable_password 'stackstorm' --encrypt
+```
 
 ## Actions
 
