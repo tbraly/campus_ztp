@@ -4,6 +4,10 @@ This integration pack works with Brocade Workflow Composer (BWC) to enhance Zero
 
 BWC is a platform for integration and automation across services and tools. It ties together your existing infrastructure and application environment so you can more easily automate that environment. It has a particular focus on taking actions in response to events.
 
+This implementation of ZTP utilizes an Excel spreadsheet as the source for variables to replace in a JINJA template. That combined information builds the final device-specific configuration that is pushed securely to the device via Secure Copy.
+
+There are additional actions to perform time-saving tasks on the network as well as perform automated backups.
+
 ## Getting Started
 
 Follow these steps to get started with this integration pack.
@@ -15,14 +19,14 @@ Follow these steps to get started with this integration pack.
 ## Installation of Campus ZTP Pack
 
 1. Fork or download the pack into the /opt/stackstorm/packs/ directory
-2. Run: st2 run packs.setup_virtualenv packs=campus-ztp
+2. Run: st2 run packs.setup_virtualenv packs=campus_ztp
 3. Run: st2ctl reload
 4. Run: st2 rule create rules/dhcpcommit.yaml
 5. Run: st2 rule create rules/running_config_changed.yaml
 
 ## Additional Setup
 
-To trigger off of DHCP, add the following lines to your isc-dhcp-server dhcpd.conf file (in addition to creating a pool for the provisioning network)::
+To trigger off of DHCP and option-82 information for true ZTP provisioning, add the following lines to your isc-dhcp-server dhcpd.conf file (in addition to creating a pool for the provisioning network):
 
 ```
 #
@@ -66,7 +70,34 @@ on commit {
 }
 ```
 
-Then copy over st2_dhcp_webhook to the /etc/dhcp directory. Modify the API key with a key you generate with:
+Turn on Option-82 (DHCP Snooping) on the MLXe or ICX distribution/core devices:
+
+MLX:
+```
+device(config)# ip dhcp-snooping vlan 10 insert-relay-information
+```
+ICX:
+```
+!!! Prerequist for DHCP Snooping:
+device(config)#enable ACL-per-port-per-vlan
+device(config)#write memory
+device(config)#exit
+device#reload
+
+!!! Turn on DHCP Snooping
+device(config)#ip dhcp snooping vlan 10
+
+!!! Allow the DHCP server to work where it's attached
+device(config)#interface ethernet 1/1/1
+device(config-if-e10000-1/1/1)#dhcp snooping trust
+device(config-if-e10000-1/1/1)#exit
+
+!!! Take advantage of Subscriber-id field to key off of in the excel spreadsheet
+device(config)#interface ethernet 1/1/3
+device(config-if-e1000-1/1/3)#dhcp snooping relay information subscriber-id stackmaster
+```
+
+Then copy over st2_dhcp_webhook to the /etc/dhcp directory and odify the API key in the file with the key you generate with:
 
 ```
 st2 apikey create -k -m '{"used_by":"DHCP server"}'
@@ -87,7 +118,7 @@ Save and Restart:
 sudo service apparmor restart
 ```
 
-Create 'brocade.cfg' to your TFTP directory with the following contents. It will be loaded by the switch and provide for the initial config to allow for the SCP copy of the final configuration. 
+Create 'brocade.cfg' to your TFTP directory with the following contents. It will be loaded by the switch and provide for the initial configuration to allow for the SCP copy of the final configuration. 
 
 ```
 user admin password brocade
