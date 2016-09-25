@@ -40,5 +40,5 @@ parameters:
     enum:
       - "telnet"
       - "ssh"
-    default: "telnet"
+    default: "ssh"
   
