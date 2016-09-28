@@ -38,20 +38,34 @@ option hostname code 12 = text;
 
 on commit {
 	set ClientIP = binary-to-ascii(10,8,".",leased-address);
-	set ClientMac = binary-to-ascii(16,8,":",substring(hardware,1,6));
+	set ClientMac = concat (
+		suffix (concat ("0", binary-to-ascii (16, 8, "", substring(hardware,1,1))),2), ":",
+		suffix (concat ("0", binary-to-ascii (16, 8, "", substring(hardware,2,1))),2), ":",
+		suffix (concat ("0", binary-to-ascii (16, 8, "", substring(hardware,3,1))),2), ":",
+		suffix (concat ("0", binary-to-ascii (16, 8, "", substring(hardware,4,1))),2), ":",
+		suffix (concat ("0", binary-to-ascii (16, 8, "", substring(hardware,5,1))),2), ":",
+		suffix (concat ("0", binary-to-ascii (16, 8, "", substring(hardware,6,1))),2)
+	);
+
 	set Name = option hostname;
 	set RemoteId = "";
 	set CircuitId = "";
 	set SubscriberId = "";
 	if exists agent.circuit-id
 	{
-		set RemoteId = binary-to-ascii(16,8,":",option agent.remote-id);
-
-		# For NetIron as relay:
+		set RemoteId = concat (
+			suffix (concat ("0", binary-to-ascii (16, 8, "", substring(option agent.remote-id,0,1))),2), ":",
+			suffix (concat ("0", binary-to-ascii (16, 8, "", substring(option agent.remote-id,1,1))),2), ":",
+			suffix (concat ("0", binary-to-ascii (16, 8, "", substring(option agent.remote-id,2,1))),2), ":",
+			suffix (concat ("0", binary-to-ascii (16, 8, "", substring(option agent.remote-id,3,1))),2), ":",
+			suffix (concat ("0", binary-to-ascii (16, 8, "", substring(option agent.remote-id,4,1))),2), ":",
+			suffix (concat ("0", binary-to-ascii (16, 8, "", substring(option agent.remote-id,5,1))),2)
+		);
+		
+		#For NetIron:
 		set CircuitId = binary-to-ascii(10,8,"/",substring(option agent.circuit-id,2,4));
-
-		# For ICX as relay:
-		# set CircuitId = binary-to-ascii(10,8,"/",substring(option agent.circuit-id,4,4));
+		#For ICX:
+		#set CircuitId = binary-to-ascii(10,8,"/",substring(option agent.circuit-id,4,4));
 	}
 	if exists agent.subscriber-id
 	{
@@ -67,6 +81,7 @@ on commit {
 			  "}");
 	log(Json);
 	execute ("/etc/dhcp/st2_dhcp_webhook",Json);
+
 }
 ```
 
