@@ -1,4 +1,4 @@
-# Campus ZTP Integration Pack v2
+# Campus ZTP Integration Pack
 
 This integration pack works with Brocade Workflow Composer (BWC) to enhance Zero Touch Provisioning (ZTP) to reliably setup ICX campus access Ethernet switches.
 
