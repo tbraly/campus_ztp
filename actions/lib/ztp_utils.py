@@ -68,6 +68,20 @@ def create_configuration(device, excel_file, template_dir, additional_variables)
 
     return process_template(template_file_name, template_dir, variables)
 
+def get_variables_for_key(excel_key, excel_file, variables):
+    excel = Excel_Reader.Excel_Reader(excel_file)
+    vfk = excel.get_variables_for_key(excel_key)
+    if variables == '[]':  # default
+        return vfk
+    try:
+        variables = json.loads(variables)
+    except:
+        sys.stderr.write("Filter variable(s) not in json array format")
+    filtered = {}
+    for v in variables:
+        if v in vfk:
+            filtered[v]=vfk[v]
+    return filtered
 
 def compare_versions(existing_version, new_version):
     ''' Input: ##.##.##aa  Output: True if the existing code is less the new.'''
