@@ -1,0 +1,39 @@
+---
+description: Campus ZTP, workflow designer compatible
+enabled: true
+entry_point: workflows/initial_configuration_mistral.yaml
+pack: campus_ztp
+ref: campus_ztp.initial_configuration_mistral
+runner_type: mistral-v2
+
+name: initial_configuration_mistral
+parameters: 
+  client_ip: 
+    required: true
+    type: string
+    description: client ip address
+    
+  circuit_id: 
+    required: true
+    type: string
+   
+  remote_id: 
+    required: true
+    type: string
+    
+  context: 
+    default: 
+    type: object
+    description: Additional workflow inputs.
+    
+  subscriber_id: 
+    required: true
+    type: string
+    
+  client_mac: 
+    required: true
+    type: string
+    
+  hostname: 
+    required: true
+    type: string
