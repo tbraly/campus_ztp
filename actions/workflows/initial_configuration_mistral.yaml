@@ -1,0 +1,75 @@
+---
+version: '2.0'
+
+campus_ztp.initial_configuration_mistral:
+  input:
+    - client_ip
+    - circuit_id
+    - hostname
+    - subscriber_id
+    - client_mac
+    - remote_id
+  tasks:
+    delay:
+      # [258, 23]
+      action: campus_ztp.delay
+      input:
+        seconds: 90
+      on-success:
+        - get_version
+    get_version:
+      # [260, 106]
+      action: campus_ztp.get_version
+      input:
+        device: '<% $.client_ip %>'
+      on-success:
+        - is_boot_code_current
+    is_boot_code_current:
+      # [334, 193]
+      action: campus_ztp.is_boot_code_current
+      input:
+        images: '<% task(get_version).result.result %>'
+      on-error:
+        - upgrade_boot_code
+      on-success:
+        - is_image_current
+    is_image_current:
+      # [73, 321]
+      action: campus_ztp.is_image_current
+      input:
+        images: '<% task(get_version).result.result %>'
+      on-success:
+        - generate_ssh_key
+      on-error:
+        - upgrade_image
+    upgrade_boot_code:
+      # [445, 310]
+      action: campus_ztp.upgrade_boot_code
+      input:
+        device: '<% $.client_ip %>'
+        filename: '<% task(is_boot_code_current).result.result %>'
+      on-success:
+        - is_image_current
+    upgrade_image:
+      # [478, 642]
+      action: campus_ztp.upgrade_image
+      input:
+        device: '<% $.client_ip %>'
+        filename: '<% task(is_image_current).result.result %>'
+      on-success:
+        - generate_ssh_key
+    generate_ssh_key:
+      # [50, 517]
+      action: campus_ztp.generate_ssh_key
+      input:
+        device: '<% $.client_ip %>'
+      on-success:
+        - transfer_ztp_configuration
+    transfer_ztp_configuration:
+      # [310, 782]
+      action: campus_ztp.transfer_ztp_configuration
+      input:
+        device: '<% $.client_ip %>'
+        excel_key: '<% $.remote_id %>_<% $.circuit_id %>'
+        
+
