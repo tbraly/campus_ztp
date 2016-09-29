@@ -1,0 +1,16 @@
+---
+name: "get_excel_variables"
+runner_type: "run-python"
+description: "returns a json object of the variables for a given key in the excel file"
+enabled: true
+entry_point: "get_excel_variables.py"
+parameters:
+  excel_key:
+    type: "string"
+    description: "key to get"
+    required: true
+  variables:
+    type: "string"
+    description: "target a specific or subset of variables - in json format"
+    required: false
+    default: "[]"
