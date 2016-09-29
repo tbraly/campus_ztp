@@ -9,7 +9,7 @@ trigger:
     url: "dhcpcommit"
 
 action:
-    ref: "campus_ztp.initial_configuration_chain"
+    ref: "campus_ztp.initial_configuration_mistral"
     parameters:
       client_ip: "{{trigger.body.payload.client_ip}}"
       remote_id: "{{trigger.body.payload.remote_id}}"
