@@ -208,10 +208,11 @@ class Session(object):
                 self.session.expect('#')
             self.session.sendline('reload')
             self.session.expect('\):')
-            self.session.sendline('y')
+            self.session.send('y')
             i = self.session.expect(['\):', pexpect.EOF])
             if i == 0:
                 self.session.sendline('y')
+                self.session.sendline('')
                 self.session.close()
 
             self.session_state = Session.NO_SESSION
