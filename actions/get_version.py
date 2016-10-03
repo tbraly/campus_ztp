@@ -35,8 +35,8 @@ class GetFlashAction(actions.SessionAction):
             result = {}
 
             unit_and_version = re.compile('(^\s+UNIT )(\d+)(:.+)(labeled as )(.+)')
-            boot = re.compile('(^\s+Compressed Boot.+ Version:)([\d\w\.]+)')
-            hardware = re.compile('(^\s+HW: )(Stackable )?(.+)')
+            boot = re.compile('(^\s+.+Boot-Monitor.+ Version:)([\d\w\.]+)')
+            hardware = re.compile('(^\s+HW: )(Stackable )?([\w\d\-]+)')
 
             for line in results[0]['output']:
                 match = unit_and_version.match(line)

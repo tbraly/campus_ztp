@@ -2,7 +2,6 @@ import sys
 import logging
 import pexpect
 
-
 class Session(object):
 
     NO_SESSION = 1
@@ -174,6 +173,7 @@ class Session(object):
         sys.stdout.write("Upgrading %s on %s\r\n" % (towhere, self.hostname))
         if self.session_state == Session.PRIVILEDGE_MODE:
             self.session.sendline('copy tftp flash %s %s %s' % (tftp_server, filename, towhere))
+            self.session.sendline('\r\n')
             i = self.session.expect(['Done.', 'Error', 'please wait', pexpect.TIMEOUT],
                                     timeout=300)
             if i == 1:
@@ -209,12 +209,11 @@ class Session(object):
             self.session.sendline('reload')
             self.session.expect('\):')
             self.session.send('y')
-            i = self.session.expect(['\):', pexpect.EOF])
+            i = self.session.expect(['\):', pexpect.EOF],timeout=5000)
             if i == 0:
-                self.session.sendline('y')
-                self.session.sendline('')
-                self.session.close()
-
+		self.session.sendline('y')
+		self.session.sendline('')
+		self.session.close()
             self.session_state = Session.NO_SESSION
         else:
             logging.warning("Attempted to logout when device was not priviledge "
