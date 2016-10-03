@@ -207,9 +207,12 @@ class Session(object):
                 self.session.sendline('write memory')
                 self.session.expect('#')
             self.session.sendline('reload')
-            self.session.expect('\):')
+            i = self.session.expect(['\):',pexpect.TIMEOUT],timeout=2)
+            if i == 1:   # FCX FIX
+                self.session.send('\r\n') 
+                self.session.expect('\):',timeout=2)
             self.session.send('y')
-            i = self.session.expect(['\):', pexpect.EOF],timeout=5000)
+            i = self.session.expect(['\):', pexpect.EOF],timeout=2)
             if i == 0:
 		self.session.sendline('y')
 		self.session.sendline('')
