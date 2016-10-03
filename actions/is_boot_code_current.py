@@ -26,7 +26,7 @@ class IsBootCodeCurrentAction(Action):
 	# {"hardware": "ICX7750-48F", "firmware": [{"version": "SWS08040A", "unit": 1}], "boot": "10.1.06T205"}
         data = json.loads(images)
 
-        hardware = data['hardware'][0:7]
+        hardware = data['hardware'].split('-')[0]
         self._boot_image=self._boot_images['Brocade'][hardware]
 
         # Strip off everything but numbers and patch

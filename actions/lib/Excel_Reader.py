@@ -87,7 +87,7 @@ class Excel_Reader(object):
         variables = {}
         col = self._variable_start_column
         row = self.get_row_for_key(key)
-        while row>=0 and col <= self._variable_end_column:
+        while col <= self._variable_end_column:
             variable = self._ws.cell(column=col, row=self._variable_name_row)
             if variable.value:
                 variables[variable.value] = self._ws.cell(column=col, row=row).value
