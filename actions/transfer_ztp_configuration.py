@@ -61,5 +61,6 @@ class TransferZTPConfigurationAction(actions.SessionAction):
                         return (True, "Success")
 
                     os.remove(self._filename)
-
+                    
+        sys.stderr.write("Could not generate configuration file from excel\r\n")
         return (False, "Failed")
