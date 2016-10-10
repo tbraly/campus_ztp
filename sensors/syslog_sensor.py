@@ -1,7 +1,5 @@
 import os,re
 
-import pymysql.cursors
-
 from logshipper.tail import Tail
 
 from st2reactor.sensor.base import Sensor
