@@ -10,7 +10,7 @@ There are additional actions to perform time-saving tasks on the network as well
 
 Check out this video:
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/ar6Kazlapu0" frameborder="0" allowfullscreen></iframe>
+https://youtu.be/ar6Kazlapu0
 
 ## Getting Started
 
