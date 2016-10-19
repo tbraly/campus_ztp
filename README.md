@@ -8,6 +8,10 @@ This implementation of ZTP utilizes an Excel spreadsheet as the source for varia
 
 There are additional actions to perform time-saving tasks on the network as well as perform automated backups.
 
+Check out this video:
+
+https://youtu.be/ar6Kazlapu0
+
 ## Getting Started
 
 Follow these steps to get started with this integration pack.
