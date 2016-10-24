@@ -168,6 +168,11 @@ st2 key set campus_ztp.enable_username 'stackstorm'
 st2 key set campus_ztp.enable_password 'stackstorm' --encrypt
 ```
 
+## Additional Notes:
+
+* In the Excel spreadsheet, the sheet used for switch configuration must be named "SWITHCES"
+* You are free to include any other sheets in the Excel file for calculations; however, the SWITCHES sheet should not include any formulas. Make a calculations on another sheet and then "Paste Special" values only to the SWITCHES sheet.
+
 ## Actions
 
 ```
