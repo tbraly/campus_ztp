@@ -9,7 +9,7 @@ class Excel_Reader(object):
         try:
             # TODO: Check is file is locked, if so wait and try to open N
             # more times after N seconds.
-            self._wb = load_workbook(excel_file)
+            self._wb = load_workbook(excel_file, data_only=True)
             self._filename = excel_file
         except:
             raise Exception("Could not load spreadsheet '%s'" % excel_file)
@@ -121,13 +121,6 @@ class Excel_Reader(object):
                 break
             col += 1
 
-        print (variables)
-
-        print ("Variable_start_column: %d" % self._variable_start_column)
-        print ("Variable_end_column  : %d" % self._variable_end_column)
-        print ("Data_start_row       : %d" % self._data_start_row)
-        print ("Data_end_row         : %d" % self._data_end_row)
-
         # Find row for key
         print("Find row for key....")
         row = self.get_row_for_key(dict[key])
@@ -137,21 +130,15 @@ class Excel_Reader(object):
             row = self._data_end_row
             self._ws.cell(column=self._key_column, row=row).value = dict[key]
             self._data_end_row += 1
-        else:
-            print("   row found at %d" % row)
 
         # Fill in values
-        print("Filling in values....")
         for k, v in dict.items():
             if not k == key:
                 if k in variables:
                     self._ws.cell(column=variables[k], row=row).value = v
                 else:
                     # Add a new column at the end with variable
-                    print("Adding a new column")
-                    print("(%d,%d)" % (self._variable_end_column, self._variable_name_row))
                     self._ws.cell(column=self._variable_end_column,
                                   row=self._variable_name_row).value = k
-                    print("(%d,%d)" % (self._variable_end_column, row))
                     self._ws.cell(column=self._variable_end_column, row=row).value = v
                     self._variable_end_column += 1
