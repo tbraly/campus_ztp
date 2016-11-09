@@ -2,5 +2,5 @@
 
 curl -k -H "St2-Api-Key: ZDVhNGM0M2RmMDJjZWEzOGZjZWZlMWYzNzExMTFiNTJiZmU1ODk0ZjY1Zjc3YTMxNGFkMDg2N2RlNDgyMzg0NA" \
 	-H "Content-Type: application/json" \
-	-X POST --data '{"trigger": "campus-ztp.dhcp_commit", "payload": '$1' }' \
+	-X POST --data '{"trigger": "campus-ztp.dhcp_commit", "payload": "$1" }' \
 	https://localhost/api/v1/webhooks/dhcpcommit
