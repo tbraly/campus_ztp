@@ -1,6 +1,15 @@
 #!/bin/sh
 
-curl -k -H "St2-Api-Key: ZDVhNGM0M2RmMDJjZWEzOGZjZWZlMWYzNzExMTFiNTJiZmU1ODk0ZjY1Zjc3YTMxNGFkMDg2N2RlNDgyMzg0NA" \
-	-H "Content-Type: application/json" \
-	-X POST --data '{"trigger": "campus-ztp.dhcp_commit", "payload": '$1' }' \
-	https://localhost/api/v1/webhooks/dhcpcommit
+# Change ST2-Api-Key below to your own generated key!
+
+# Input is JSON formated string from ISC DHCP Server
+
+# Check to see if this a a dhcp commit Campus ZTP should react on
+/etc/dhcp/dhcp_commit_valid.py $1
+
+if [ $? -eq 0 ]; then
+    curl -k -H "St2-Api-Key: ZDVhNGM0M2RmMDJjZWEzOGZjZWZlMWYzNzExMTFiNTJiZmU1ODk0ZjY1Zjc3YTMxNGFkMDg2N2RlNDgyMzg0NA" \
+        -H "Content-Type: application/json" \
+        -X POST --data '{"trigger": "campus-ztp.dhcp_commit", "payload": '$1' }' \
+        https://localhost/api/v1/webhooks/dhcpcommit
+fi
