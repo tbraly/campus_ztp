@@ -25,10 +25,17 @@ Follow these steps to get started with this integration pack.
 1. Fork or download the pack into the /opt/stackstorm/packs/ directory
 2. Run: st2 run packs.setup_virtualenv packs=campus_ztp
 3. Run: st2ctl reload
-4. Run: st2 rule create rules/dhcpcommit.yaml
-5. Run: st2 rule create rules/running_config_changed.yaml
 
-## Additional Setup
+## Communicating with devices
+
+If using Ubuntu 16.04, in order to use SSH/SCP, you must add the following to /root/.ssh/config:
+
+``` 
+Host *
+  KexAlgorithms +diffie-hellman-group1-sha1
+```
+
+## Additional Setups
 
 To trigger off of DHCP and option-82 information for true ZTP provisioning, add the following lines to your isc-dhcp-server dhcpd.conf file (in addition to creating a pool for the provisioning network):
 
@@ -116,10 +123,18 @@ device(config)#interface ethernet 1/1/3
 device(config-if-e1000-1/1/3)#dhcp snooping relay information subscriber-id stackmaster
 ```
 
-Then copy over st2_dhcp_webhook to the /etc/dhcp directory and odify the API key in the file with the key you generate with:
+Then copy over st2_dhcp_webhook and dhcp_commit_valid.py to the /etc/dhcp directory and modify the API key in the file with the key you generate with:
 
 ```
 st2 apikey create -k -m '{"used_by":"DHCP server"}'
+```
+
+Edit the dhcp_commit_valid.py file to include the vender OUI'S (or macs) you want to perform ZTP on and the max_timespan to retain previous request for the same MAC (This suppresses duplicate DHCP requests from the same switch).
+
+```
+valid_ouis = ['cc:4e:24','60:9c:9f']
+max_timespan = 10  # In Seconds
+tmp_dir = '/tmp'
 ```
 
 In order to let the DHCP server run the WebHook, you'll need to modify apparmor:
@@ -170,7 +185,7 @@ st2 key set campus_ztp.enable_password 'stackstorm' --encrypt
 
 ## Additional Notes:
 
-* In the Excel spreadsheet, the sheet used for switch configuration must be named "SWITHCES"
+* In the Excel spreadsheet, the sheet used for switch configuration must be named "SWITCHES"
 
 ## Actions
 
